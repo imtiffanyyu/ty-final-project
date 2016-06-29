@@ -1,0 +1,7 @@
+User flows
+1. login with facebook. 
+2. see map of where people are located: current city.
+3. see profile of people when zoom in.
+4. message them.
+
+1. FB API login
