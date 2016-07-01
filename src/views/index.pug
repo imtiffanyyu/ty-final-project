@@ -1,14 +1,52 @@
 doctype html
 html
 	head
-		title Diversability Community
+		link(rel="icon" href="/img/favicon-emblemmatic-map-my-members-logo-71.png")
+		title Map My Members
 		link(href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
 		link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css")
+		link(rel="stylesheet" href="/css/custom.css")
 		script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
-		script(src="/js/fblogin.js")
+		script(src="/js/custom.js")
 
 	body
-		p hello world
-		fb:login-button(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();')
-		div#status
+
+		#login-page.row
+			.col.s12.z-depth-4.card-panel
+				form.login-form
+					.row
+						.input-field.col.s12.center
+							img.circle.responsive-img.valign.profile-image-login(src='img/emblemmatic-map-my-members-logo-71.png', alt='')
+							p.center.login-form-text#status
+					.row
+						.input-field.col.s12
+								center
+									fb:login-button.col.s12(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true" size='xlarge')
+								br
+								br
+								a.btn.waves-effect.waves-light.col.s12#viewprofile(href='/profile' style='display: none') View Your Profile
+		
+
+		//- if admin
+		//- 	h1 Welcome
+			div#status 
+			
+			//- h4 All Groups
+			//- each group in data
+			//- 	p= group.name
+			//- 	p= group.username
+					
+					
+		//- else
+		//- 	form(action='/login' method='post')
+		//- 		h2 Please sign in
+		//- 		label(for='inputAdmin') username
+		//- 		input#Username(name='username', type='username', placeholder='Username', required)
+		//- 		br
+		//- 		label(for='inputPassword') password
+		//- 		input#password(name='password', type='password', placeholder='Password', required)
+		//- 		br
+		//- 		input(type='submit' value='Login' id='submit')
+		//- 		a(href='/new') Create Account
+		//- 	h2#error-message= message
