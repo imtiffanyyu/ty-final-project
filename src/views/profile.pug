@@ -10,6 +10,20 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
 		script(src="/js/custom.js")
 	body
+		ul#dropdown1.dropdown-content
+			each group in data.groups
+				li
+					a(href="/group/"+group.id ) #{group.name}
+		nav
+			.nav-wrapper
+				a.brand-logo(href='#!') Map My Members
+				ul.right.hide-on-med-and-down
+					li
+						a(href='profile') Profile
+					li
+						a.dropdown-button(href='#!', data-activates='dropdown1')
+						| Groups
+						i.material-icons.right arrow_drop_down
 		#login-page.row
 			.col.s12.z-depth-4.card-panel
 				.login-form

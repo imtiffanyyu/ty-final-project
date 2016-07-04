@@ -166,29 +166,29 @@ app.get('/group/:id', function (req, res) {
 		where: {id: req.params.id},
 		include: [ Member ]
 	}).then(function (groupinfo) {
-			var points = groupinfo.members.map(function(member){
-				return member.location;
-			})
-			console.log('points stuff')
-			console.log(points)
-			console.log("bleep");
-			var groupdata = groupinfo;
-			console.log(groupdata);
+		var points = groupinfo.members.map(function(member){
+			return member.location;
+		})
+		console.log('points stuff')
+		console.log(points)
+		console.log("bleep");
+		var groupdata = groupinfo;
+		console.log(groupdata);
 
-			var pointsObject = [];
-			for (var i = 0; i < points.length; i++) {
-				if (points[i] !== null) {
-					pointsObject.push ({location: points[i]})
-				}
+		var pointsObject = [];
+		for (var i = 0; i < points.length; i++) {
+			if (points[i] !== null) {
+				pointsObject.push ({location: points[i]})
 			}
+		}
 
-			var gmAPI = new GoogleMapsAPI(config);
-			var params = {
-				size: '500x400',
-				maptype: 'roadmap',
-				markers: pointsObject	
-		
-			};
+		var gmAPI = new GoogleMapsAPI(config);
+		var params = {
+			size: '500x400',
+			maptype: 'roadmap',
+			markers: pointsObject	
+
+		};
 		var mapURL = gmAPI.staticMap(params); // return static map URL
 		console.log(mapURL)
 		res.render('group', {
@@ -200,7 +200,53 @@ app.get('/group/:id', function (req, res) {
 })
 
 // update member locations
+app.put('/group/:id', function (req, res) {
+	Member.findOne({
+		where: {
+			id: req.body.memberid
+		},
+		include: [Group]
+	}).then(function (member) {
+		var object = {};
+		var membergroup = member.group.id
+		console.log('Member group is ' + membergroup)
+		object[req.body.newid] = req.body.newValue;
+		console.log(object);
+		member.updateAttributes(object).then(function () {
+			Group.findOne({
+				where: {id: membergroup},
+				include: [ Member ]
+			}).then(function (groupinfo) {
+				var points = groupinfo.members.map(function(member){
+					return member.location;
+				})
+				console.log('points stuff')
+				console.log(points)
+				console.log("bleep");
+				var groupdata = groupinfo;
+				console.log(groupdata);
 
+				var pointsObject = [];
+				for (var i = 0; i < points.length; i++) {
+					if (points[i] !== null) {
+						pointsObject.push ({location: points[i]})
+					}
+				}
+
+				var gmAPI = new GoogleMapsAPI(config);
+				var params = {
+					size: '500x400',
+					maptype: 'roadmap',
+					markers: pointsObject	
+
+				};
+		var mapURL = gmAPI.staticMap(params); // return static map URL
+		res.send(mapURL)
+		
+	})
+		})
+	})
+})
 
 sequelize.sync( {force: true} ).then(function () {
 	var server = app.listen(3000, function () {

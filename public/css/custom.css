@@ -155,7 +155,9 @@ li.li-hover:hover{
   background-color: #0A6464;
 }
 
-.big-btn {
-    width: 150px;
-    height: 150px;
+a.editlink { }
+.datainfo { }
+.savebtn { display: none;
 }
+.savebtn:hover { color: #fff; background: blue-grey; text-decoration: none; }
+.savebtn:active { background: #556790; }

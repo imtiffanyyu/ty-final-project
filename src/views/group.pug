@@ -24,7 +24,10 @@ html
 						each member in groupdata.members	
 							center.col.s4
 								p.login-form-text= member.name
+								span.memberid(hidden)= member.id
 								img.circle.responsive-img.valign.profile-image-login(src=member.picture, alt='')
-								p= member.location
+								p(id="location" class="datainfo")= member.location
+								a(href="#" class="editlink") Edit Location
+								a(class="savebtn") Save
 	img(src=mapURL)
 							
