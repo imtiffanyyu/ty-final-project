@@ -62,7 +62,7 @@ function sendtobackend (response) {
   function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', 'GET',
-      {"fields":"id,name,email,picture,admined_groups{name,id,description,members{location,picture}}"}, function(response) {
+      {"fields":"id,name,email,picture,admined_groups{name,id,description,members{name,location,picture}}"}, function(response) {
       console.log(response);
       console.log('Successful login for: ' + response.name);
       document.getElementById('status').innerHTML =

@@ -6,6 +6,17 @@ var Strategy = require('passport-facebook').Strategy;
 var Sequelize = require('sequelize');
 var pg = require('pg');
 const bcrypt = require('bcrypt');
+var GoogleMapsAPI = require('googlemaps');
+
+// Google Maps API
+var config = {
+	key: 'AIzaSyDpqwFm2cq9TtB4pijrvuun0dYq6NlUQZg',
+  stagger_time:       1000, // for elevationPath
+  encode_polylines:   false,
+  secure:             true, // use https
+  proxy:              'http://localhost:3000/' // optional, set a proxy for HTTP requests
+};
+
 
 // connect to the database
 var sequelize = new Sequelize('fbadmin', process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
@@ -71,50 +82,12 @@ app.use(express.static('public'));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configure the Facebook strategy for use by Passport.
-//
-// OAuth 2.0-based strategies require a `verify` function which receives the
-// credential (`accessToken`) for accessing the Facebook API on the user's
-// behalf, along with the user's profile.  The function must invoke `cb`
-// with a user object, which will be set at `req.user` in route handlers after
-// authentication.
-// passport.use(new Strategy({
-//     clientID: process.env.CLIENT_ID,
-//     clientSecret: process.env.CLIENT_SECRET,
-//     callbackURL: 'http://localhost:3000/login/facebook/return'
-//   },
-//   function(accessToken, refreshToken, profile, cb) {
-    // In this example, the user's Facebook profile is supplied as the user
-    // record.  In a production-quality application, the Facebook profile should
-    // be associated with a user record in the application's database, which
-    // allows for account linking and authentication with other identity
-    // providers.
-  //   return cb(null, profile);
-  // }));
-
-
-// Configure Passport authenticated session persistence.
-//
-// In order to restore authentication state across HTTP requests, Passport needs
-// to serialize users into and deserialize users out of the session.  In a
-// production-quality application, this would typically be as simple as
-// supplying the user ID when serializing, and querying the user record by ID
-// from the database when deserializing.  However, due to the fact that this
-// example does not have a database, the complete Twitter profile is serialized
-// and deserialized.
-// passport.serializeUser(function(user, cb) {
-//   cb(null, user);
-// });
-
-// passport.deserializeUser(function(obj, cb) {
-//   cb(null, obj);
-// });
 
 // Define routes.
 
 // initial log in
 app.get('/', function (req,res) {
-		res.render('index')
+	res.render('index')
 })
 
 app.post('/admin', function (req, res) {
@@ -186,146 +159,51 @@ app.get('/profile', function (req, res) {
 		})
 	})
 })
-// app.get('/indexjson',
-// 	function(req, res) {
-// 		res.send(admininfo)
-// });
 
-// // displays group members of a group
-// app.get('/groups/:id', function (req, res) {
-// 	console.log(req.params.id);
-// 	Group.findAll({
-// 		where: {id: req.params.id},
-// 		include: [ Member ]
-// 	}).then(function (group) {
-// 		console.log(group);
-// 		res.render('group')
-// 	});
-// });
+app.get('/group/:id', function (req, res) {
+	console.log(req.params.id);
+	Group.findOne({
+		where: {id: req.params.id},
+		include: [ Member ]
+	}).then(function (groupinfo) {
+			var points = groupinfo.members.map(function(member){
+				return member.location;
+			})
+			console.log('points stuff')
+			console.log(points)
+			console.log("bleep");
+			var groupdata = groupinfo;
+			console.log(groupdata);
 
+			var pointsObject = [];
+			for (var i = 0; i < points.length; i++) {
+				if (points[i] !== null) {
+					pointsObject.push ({location: points[i]})
+				}
+			}
 
-// creates all the tables to the table
+			var gmAPI = new GoogleMapsAPI(config);
+			var params = {
+				size: '500x400',
+				maptype: 'roadmap',
+				markers: pointsObject	
+		
+			};
+		var mapURL = gmAPI.staticMap(params); // return static map URL
+		console.log(mapURL)
+		res.render('group', {
+			groupdata: groupdata,
+			mapURL: mapURL
+		})
+		
+	})
+})
 
+// update member locations
 
-
-			// for (var j; j < fbinfo.admined_groups.data[i].members.data.length; j++) {
-			// 	Member.create({
-			// 		fbmemberid: fbinfo.admined_groups.data[i].members.data[j].id,
-			// 		name: fbinfo.admined_groups.data[i].members.data[j].name,
-			// 		location: fbinfo.admined_groups.data[i].members.data[j].location.name,
-			// 		picture: fbinfo.admined_groups.data[i].members.data[j].picture.data.url
-			// 	})
-			// }
-
-// // adds groups to the table
-// app.post('/group', function (req,res) {
-// 	fbinfo = req.body.fbinfo
-// 	Admin.findOne({
-// 		where: {
-
-// 		}
-// 	}).then(function(admin){
-// 		admin.createGroup({
-// 			fbgroupid: fbinfo.
-// 		})
-// 	})
-// })
-
-
-// // create new group
-
-// // create new members
-
-// // update member locations
-
-// // shows profile and groups
-// app.get('/profile', function (req, res) {
-// 	var admin = req.session.admin;
-// 	if (admin === undefined) {
-// 		res.redirect('/?message=' + encodeURIComponent("Please log in to access the blog."));
-// 	} else {
-// 		Group.findAll({
-// 			where: {
-// 				adminId: admin.id
-// 			}
-// 		}).then(function(groups) {
-// 			var groups = groups;
-// 			console.log(data)
-// 		})
-// 		res.render('profile', {
-// 			admin: admin,
-// 			groups: groups
-// 		})
-// 	}
-// })
-
-// app.post('/login', function (req, res) {
-// 	if(req.body.username.length === 0) {
-// 		res.redirect('/?message=' + encodeURIComponent("Please fill out your username."));
-// 		return;
-// 	}
-
-// 	if(req.body.password.length === 0) {
-// 		res.redirect('/?message=' + encodeURIComponent("Please fill out your password."));
-// 		return;
-// 	}
-
-// 	Admin.findOne({
-// 		where: {
-// 			username: req.body.username
-// 		}
-// 	}).then(function (admin) {
-// 		if (admin !== null) {
-// 			var hash = admin.password;
-// 			bcrypt.compare (req.body.password, hash, function (err, result) {
-// 				req.session.admin = admin;
-// 				res.redirect('/profile')
-// 			})
-// 		} else {
-// 			res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-// 		}
-// 	}, function (err) {
-// 			res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-// 	})
-// })
-
-// app.get('/logout', function (req, res) {
-// 	req.session.destroy(function(err) {
-// 		if(err) {
-// 			throw err;
-// 		}
-// 		res.redirect('/?message=' + encodeURIComponent("Successfully logged out."));
-// 	})
-// });
-
-
-// app.get('/login',
-//   function(req, res){
-//   	console.log(req.user);
-//     res.render('login');
-//   });
-
-// app.get('/login/facebook',
-//   passport.authenticate('facebook', {
-// 			scope : ['public_profile', 'user_location', 'user_managed_groups', 'email']
-// 		}));
-
-// app.get('/login/facebook/return', 
-//   passport.authenticate('facebook', { failureRedirect: '/login' }),
-//   function(req, res) {
-//   	console.log(req.user);
-//     res.redirect('/');
-//   });
-
-// app.get('/profile',
-//   require('connect-ensure-login').ensureLoggedIn(),
-//   function(req, res){
-//   	console.log(req.user);
-//     res.render('profile', { user: req.user });
-//   });
 
 sequelize.sync( {force: true} ).then(function () {
 	var server = app.listen(3000, function () {
-		console.log('Diversability app listening on port: ' + server.address().port);
+		console.log('Map My Members app listening on port: ' + server.address().port);
 	});
 });
