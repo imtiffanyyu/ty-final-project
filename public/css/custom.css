@@ -15,7 +15,7 @@ html {
 }
 
 body {
-  background-color: #00bcd4;
+  background-color: #318787;
   display: table-cell;
   vertical-align: middle;
 }
@@ -149,4 +149,13 @@ li.li-hover:hover{
 .login-text {
   margin-top: -6px;
   margin-left: -6px !important;
+}
+
+.btn {
+  background-color: #0A6464;
+}
+
+.big-btn {
+    width: 150px;
+    height: 150px;
 }
