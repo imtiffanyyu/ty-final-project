@@ -10,35 +10,23 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
 		script(src="/js/custom.js")
 	body
-		ul#dropdown1.dropdown-content
-			each group in data.groups
-				li
-					a(href="/group/"+group.id ) #{group.name}
-		nav
-			.nav-wrapper
-				a.brand-logo(href='#!') Map My Members
-				ul.right.hide-on-med-and-down
-					li
-						a(href='profile') Profile
-					li
-						a.dropdown-button(href='#!', data-activates='dropdown1')
-						| Groups
-						i.material-icons.right arrow_drop_down
-		#login-page.row
-			.col.s12.z-depth-4.card-panel
-				.login-form
-					.row
-						.input-field.col.s12.center
-							img.circle.responsive-img.valign.profile-image-login(src=data.picture, alt='')
-							p.center.login-form-text #{data.name}
-							p.center.login-form-text #{data.email}
-							fb:login-button.col.s12(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true")
-							br
-							p.center Your Groups
-					.row
-						each group in data.groups	
-							center.col.s12
-								a(href="/group/"+group.id ) #{group.name}
+		include ./nav.pug
+		.container
+			#login-page.row
+				.col.s12.z-depth-4.card-panel
+					.login-form
+						.row
+							.col.s12.center
 								br
+								img.circle.responsive-img.valign.profile-image-login(src=data.picture, alt='profile photo')
+								p.center.title-text #{data.name}
+								p.center.login-form-text #{data.email}
 								br
-							
+								p.center Your Groups
+						.row
+							.container
+								.collection
+									each group in data.groups
+										span
+											a.collection-item.avatar.title(href="/group/"+group.id ) #{group.name}
+												i(class="material-icons circle teal") supervisor_account

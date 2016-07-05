@@ -38,7 +38,8 @@ var Admin = sequelize.define('admin', {
 // create table called groups
 var Group = sequelize.define('group', {
 	fbgroupid: Sequelize.BIGINT,
-	name: Sequelize.STRING
+	name: Sequelize.STRING,
+	description: Sequelize.TEXT
 })
 
 // create table called members
@@ -104,12 +105,14 @@ app.post('/admin', function (req, res) {
 		for (var i = 0; i < fbinfo.admined_groups.data.length; i++) {
 			makeMeGroup(theadmin, fbinfo, i, makeMeMembers)
 		}
+		res.send('success')
 	})
 })
 function makeMeGroup(theadmin, fbinfo, i, callback) {
 	Group.findOrCreate({ where: {
 		fbgroupid: fbinfo.admined_groups.data[i].id,
 		name: fbinfo.admined_groups.data[i].name,
+		description: fbinfo.admined_groups.data[i].description,
 		adminId: theadmin[0].id
 	}}).then(function(thegroup){
 		callback(thegroup, fbinfo, i)

@@ -1,4 +1,5 @@
-function sendtobackend (response) {
+function sendtobackend (response, redirect) {
+  console.log('STB triggered')
   $.ajax({
     method: 'POST',
     url: '/admin',
@@ -7,6 +8,15 @@ function sendtobackend (response) {
     },
     success: function(data, status){
       console.log('POST Done')
+      if (redirect) {
+        setTimeout(function (){
+          window.location.replace("http://localhost:3000/profile");
+        } , 1000 ); 
+      }
+    },
+    error: function(stat, error) {
+      console.log('POST Fail with ' + stat)
+      console.log(error)
     }
   })
 
@@ -24,9 +34,9 @@ function sendtobackend (response) {
 }
 
 // This is called with the results from from FB.getLoginStatus().
-  function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
+function statusChangeCallback(response) {
+  console.log('statusChangeCallback');
+  console.log(response);
     // The response object is returned with a status field that lets the
     // app know the current login status of the person.
     // Full docs on the response object can be found in the documentation
@@ -34,18 +44,21 @@ function sendtobackend (response) {
     if (response.status === 'connected') {
       // Logged into your app and Facebook.
       testAPI();
+
       $('#viewprofile').show();
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
       document.getElementById('status').innerHTML = 'Please log ' +
-        'into this app.';
+      'into this app.';
       $('#viewprofile').hide();
+      
     } else {
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
       document.getElementById('status').innerHTML = 'Please log ' +
-        'into Facebook.';
+      'into Facebook.';
       $('#viewprofile').hide();
+      
     }
   }
 
@@ -62,19 +75,18 @@ function sendtobackend (response) {
   function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', 'GET',
-      {"fields":"id,name,email,picture,admined_groups{name,id,description,members{name,location,picture}}"}, function(response) {
-      console.log(response);
-      console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
-      sendtobackend(response);
+      {"fields":"id,name,email,picture.type(large),admined_groups{name,id,description,cover,members{name,location,picture}}"}, function(response) {
+        console.log(response);
+        console.log('Successful login for: ' + response.name);
+        document.getElementById('status').innerHTML =  'Thanks for logging in, ' + response.name + '!';
+        sendtobackend(response, true);
 
 
-    });
+      });
   }
 
-$(document).ready(function(){
-
+  $(document).ready(function(){
+    $(".button-collapse").sideNav();
   // $('#submit').click(function(event) {
   //   if($('#email').val().trim().length === 0 || $('#password').val().trim().length === 0) {
   //     event.preventDefault();
@@ -83,8 +95,8 @@ $(document).ready(function(){
   // });
 
   window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '1614896528820873',
+    FB.init({
+      appId      : '1614896528820873',
     cookie     : true,  // enable cookies to allow the server to access 
                         // the session
     xfbml      : true,  // parse social plugins on this page
@@ -107,7 +119,9 @@ $(document).ready(function(){
     statusChangeCallback(response);
   });
 
-  };
+  FB.Event.subscribe("auth.logout", function() {window.location = '/'});
+
+};
 
   // Load the SDK asynchronously
   (function(d, s, id) {
@@ -118,8 +132,8 @@ $(document).ready(function(){
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
- 
-$(".editlink").on("click", function(e){
+
+  $(".editlink").on("click", function(e){
     e.preventDefault();
     var dataset = $(this).prev(".datainfo");
     var savebtn = $(this).next(".savebtn");
@@ -165,10 +179,11 @@ $(".editlink").on("click", function(e){
         },
         success: function(data) {
           console.log(data)
-          
+          $ ('#newMap').attr({'src': data})
+
         }
       })
+      });
+
+
     });
-
-
-});

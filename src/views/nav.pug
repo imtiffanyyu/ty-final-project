@@ -1,0 +1,18 @@
+nav
+	.nav-wrapper
+		.brand-logo(style='margin-left:20px')
+			img(src="/img/white-logo.png" style="margin:5px; height:50px")
+		a.button-collapse(href='#', data-activates='mobile-demo')
+			i.material-icons(style="margin:5px;") menu
+		ul.right.hide-on-med-and-down
+			li
+				a(href='http://localhost:3000/profile')
+					i(class='material-icons') arrow_back
+			li
+				fb:login-button(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true")
+		ul#mobile-demo.side-nav
+			li
+				a(href='http://localhost:3000/profile')
+					i(class='material-icons') arrow_back
+			li
+				fb:login-button(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true")

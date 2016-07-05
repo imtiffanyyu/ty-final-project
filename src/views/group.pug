@@ -10,24 +10,30 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
 		script(src="/js/custom.js")
 	body
-		#login-page.row
-			.col.s12.z-depth-4.card-panel
-				.login-form
+		include ./nav.pug
+		.container
+			.row
+				.col.s12.z-depth-4.card-panel
 					.row
-						.input-field.col.s12.center
+						.col.s12.center
 							
-							p.center.login-form-text #{groupdata.name}
-							br
-							p.center Your #{groupdata.members.length} Members
-
-					.row
-						each member in groupdata.members	
-							center.col.s4
-								p.login-form-text= member.name
-								span.memberid(hidden)= member.id
-								img.circle.responsive-img.valign.profile-image-login(src=member.picture, alt='')
-								p(id="location" class="datainfo")= member.location
-								a(href="#" class="editlink") Edit Location
-								a(class="savebtn") Save
-	img(src=mapURL)
-							
+							p.center.title-text #{groupdata.name}
+							p= groupdata.description
+							.row
+								.container
+									.col.s6
+										i(class='large material-icons') supervisor_account
+										p.center Your #{groupdata.members.length} Members
+										each member in groupdata.members	
+											.col.s4
+												p.login-form-text= member.name
+												span.memberid(hidden)= member.id
+												img.circle.responsive-img.valign.profile-image-login(src=member.picture, alt='profile photo')
+												p(id="location" class="datainfo")= member.location
+												a(href="#" class="editlink") Edit Location
+												a(class="savebtn btn") Save
+													i(class="material-icons left") add_location
+									.col.s6
+										i(class='large material-icons') person_pin_circle
+										p.center.col.l12.m12.s12 Their Locations
+										img#newMap.col.l12.m12.s12(src=mapURL)
