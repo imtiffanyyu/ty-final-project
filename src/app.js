@@ -248,6 +248,8 @@ app.put('/group/:id', function (req, res) {
 	})
 })
 
+// TO DO -- JQUERY ON THE MAP, ADD ICONS
+
 sequelize.sync( {force: true} ).then(function () {
 	var server = app.listen(3000, function () {
 		console.log('Map My Members app listening on port: ' + server.address().port);
