@@ -4,8 +4,7 @@
 /*----------------------------------------
   General  Layout Style
 ------------------------------------------*/
-html,
-body {
+html, body {
   height: 100%; }
 
 html {
@@ -19,6 +18,10 @@ body {
 
 nav {
   background-color: #003636; }
+  nav #loginbutton {
+    padding-right: 10px; }
+    nav #loginbutton span {
+      vertical-align: middle !important; }
 
 #main,
 footer {
@@ -143,9 +146,9 @@ li.li-hover:hover {
   background-color: #0A6464; }
 
 a {
-  color: #167C7C; }
+  color: #318787; }
   a:hover {
-    color: #318787; }
+    color: #167C7C; }
 
 a.editlink {
   font-size: 0.7em; }

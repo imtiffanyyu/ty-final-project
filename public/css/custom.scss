@@ -1,3 +1,21 @@
+$primary-color: #318787 !default;
+$primary-color-light: false !default;
+$primary-color-dark: false !default;
+@if not $primary-color-light {
+  $primary-color-light: lighten($primary-color, 15%);
+}
+@if not $primary-color-dark {
+  $primary-color-dark: darken($primary-color, 15%);
+}
+$secondary-color: #003636 !default;
+$button-color: #0A6464 !default;
+$savebutton-color: #004F4F !default;
+
+$success-color: color("green", "base") !default;
+$error-color: color("red", "base") !default;
+
+$link-color: #167C7C !default;
+
 /*=================================================================================
     General
 ====================================================================================*/
@@ -5,23 +23,29 @@
   General  Layout Style
 ------------------------------------------*/
 
-html,
-body {
+html, body {
     height: 100%;
 }
+
 html {
     display: table;
     margin: auto;
 }
 
 body {
-  background-color: #318787;
+  background-color: $primary-color;
   display: table-cell;
   vertical-align: middle;
 }
 
 nav {
-  background-color: #003636;
+  background-color: $secondary-color;
+  #loginbutton {
+    padding-right: 10px;
+    span {
+      vertical-align: middle!important;
+    }
+  }
 }
 
 #main,
@@ -160,13 +184,13 @@ li.li-hover:hover{
 ------------------------------------------*/
 
 .btn {
-  background-color: #0A6464;
+  background-color: $button-color;
 }
 
 a {
-  color: #167C7C;
+  color: $primary-color;
   &:hover {
-    color: #318787;
+    color: $link-color;
   }
 }
 
@@ -178,11 +202,11 @@ a.editlink { font-size: 0.7em; }
   font-size: 0.7em;
   &:hover {
     color: #fff; 
-    background: #003636; 
+    background: $secondary-color; 
     text-decoration: none;
   }
   &:active {
-    background: #004F4F;
+    background: $savebutton-color;
   }
 }
 

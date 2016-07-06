@@ -10,7 +10,25 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
 		script(src="/js/custom.js")
 	body
-		include ./nav.pug
+		nav
+			.nav-wrapper
+				.brand-logo(style='margin-left:20px')
+					img(src="/img/white-logo.png" style="margin:5px; height:50px")
+				a.button-collapse(href='#', data-activates='mobile-demo')
+					i.material-icons(style="margin:5px;") menu
+				ul.right.hide-on-med-and-down
+					li
+						a(href='http://localhost:3000/profile')
+							i(class='material-icons') person
+					li
+						fb:login-button(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true" id="loginbutton")
+				ul#mobile-demo.side-nav
+					li
+						a(href='http://localhost:3000/profile')
+							i(class='material-icons') person
+					li
+						fb:login-button(scope='public_profile,email,user_location,user_managed_groups', onlogin='checkLoginState();' data-auto-login-link="true" auto-logout-link="true")
+
 		.container
 			#login-page.row
 				.col.s12.z-depth-4.card-panel
@@ -25,8 +43,11 @@ html
 								p.center Your Groups
 						.row
 							.container
-								.collection
+								ul.collection
 									each group in data.groups
-										span
-											a.collection-item.avatar.title(href="/group/"+group.id ) #{group.name}
-												i(class="material-icons circle teal") supervisor_account
+										li
+											div
+												a.collection-item.avatar(href="/group/"+group.id ) 
+													i(class="material-icons circle teal") supervisor_account
+													| #{group.name}
+												
