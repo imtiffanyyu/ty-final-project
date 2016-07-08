@@ -174,4 +174,7 @@ a.editlink {
 .collection .collection-item.avatar {
   min-height: 58px; }
 
+.ui-autocomplete.ui-widget {
+  font-size: 0.65em; }
+
 /*# sourceMappingURL=custom.css.map */

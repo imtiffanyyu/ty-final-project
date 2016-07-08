@@ -81,7 +81,6 @@ app.use(express.static('public'));
 
 // initial log in
 app.get('/', (req,res) => {
-	console.log(fbkey)
 	res.render('index', {
 		fbkey: fbkey
 	})
@@ -157,9 +156,9 @@ app.get('/profile', (req, res) => {
 	}).then( (admininfo) => {
 		console.log(req.session.admin)
 		var data = admininfo;
-		console.log(data);
 		res.render('profile', {
-			data: data
+			data: data,
+			fbkey: fbkey
 		})
 	})
 })
@@ -180,7 +179,6 @@ app.get('/group/:id', (req, res) => {
 		})
 		
 		var groupdata = groupinfo;
-		console.log(groupdata);
 
 		var pointsObject = [];
 		for (var i = 0; i < points.length; i++) {
@@ -193,9 +191,6 @@ app.get('/group/:id', (req, res) => {
 			}
 		}
 
-		console.log('points stuff')
-		console.log(pointsObject);
-
 		var gmAPI = new GoogleMapsAPI(config);
 		var params = {
 			size: '500x400',
@@ -207,7 +202,8 @@ app.get('/group/:id', (req, res) => {
 		console.log(mapURL)
 		res.render('group', {
 			groupdata: groupdata,
-			mapURL: mapURL
+			mapURL: mapURL,
+			fbkey: fbkey
 		})
 		
 	})
@@ -251,9 +247,7 @@ app.put('/group/:id', (req, res) => {
 					}
 				}
 				console.log('points stuff')
-				console.log(pointsObject);
-				
-				
+				console.log(pointsObject);	
 
 				var gmAPI = new GoogleMapsAPI(config);
 				var params = {
@@ -265,7 +259,7 @@ app.put('/group/:id', (req, res) => {
 		var mapURL = gmAPI.staticMap(params); // return static map URL
 		res.send(mapURL)
 		
-	})
+			})
 		})
 	})
 })

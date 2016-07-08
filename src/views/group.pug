@@ -6,11 +6,16 @@ html
 		link(href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
 		link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css")
 		
+		link(rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css")
+		script(src="//code.jquery.com/jquery-1.10.2.js")
+
 		script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js")
 		script(src="/js/custom.js")
 
 		link(rel="stylesheet" href="/css/custom.css")
+			
+		script(src="//code.jquery.com/ui/1.11.4/jquery-ui.js")
 	body
 		include ./nav.pug
 		.container
@@ -39,3 +44,4 @@ html
 										i(class='large material-icons') person_pin_circle
 										p.center.col.l12.m12.s12 Their Locations
 										img#newMap.col.l12.m12.s12(src=mapURL)
+		p#fbkey(hidden) #{fbkey}

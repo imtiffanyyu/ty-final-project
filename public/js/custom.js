@@ -58,20 +58,18 @@ function checkLoginState() {
 }
 
 
-   // Here we run a very simple test of the Graph API after login is
-  // successful.  See statusChangeCallback() for when this call is made.
-  function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', 'GET',
-      {"fields":"id,name,email,picture.type(large),admined_groups{name,id,description,cover,members{name,location,picture}}"}, function(response) {
-        console.log(response);
-        console.log('Successful login for: ' + response.name);
-        document.getElementById('status').innerHTML =  'Thanks for logging in, ' + response.name + '!';
-        sendtobackend(response, true);
-
-
-      });
-  }
+// Here we run a very simple test of the Graph API after login is
+// successful.  See statusChangeCallback() for when this call is made.
+function testAPI() {
+  console.log('Welcome!  Fetching your information.... ');
+  FB.api('/me', 'GET',
+    {"fields":"id,name,email,picture.type(large),admined_groups{name,id,description,cover,members{name,location,picture}}"}, function(response) {
+      console.log(response);
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =  'Thanks for logging in, ' + response.name + '!';
+      sendtobackend(response, true);
+  });
+}
 
 $(document).ready(function(){
   $(".button-collapse").sideNav();
@@ -126,10 +124,28 @@ $(document).ready(function(){
 
     dataset.empty();
 
+
     $('<input type="text" name="'+newid+'" id="'+newid+'" value="'+currval+'" class="hlite">').appendTo(dataset);
 
     $(this).css("display", "none");
     savebtn.css("display", "block");
+
+
+    $('#location-form').autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "http://gd.geobytes.com/AutoCompleteCity",
+          dataType: "jsonp",
+          data: {
+            q: request.term
+          },
+          success: function( data ) {
+            response( data );
+          }
+        });
+      },
+      minLength: 3,
+    });
   });
 
   $(".savebtn").on("click", function(e){
@@ -143,6 +159,7 @@ $(document).ready(function(){
       var cinput  = "#"+newid+"-form"; // creates form for the id
       var einput  = $(cinput);
       var newval  = einput.val();
+
       console.log('form value is: ' + newval)
       $(this).css("display", "none");
       einput.remove();

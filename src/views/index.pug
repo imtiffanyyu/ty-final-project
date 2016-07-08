@@ -26,28 +26,4 @@ html
 								br
 								br
 								a.btn.waves-effect.waves-light.col.s12#viewprofile(href='/profile' style='display: none') View Your Profile
-								p#fbkey(hidden) #{fbkey}
-		
-
-		//- if admin
-		//- 	h1 Welcome
-			div#status 
-			
-			//- h4 All Groups
-			//- each group in data
-			//- 	p= group.name
-			//- 	p= group.username
-					
-					
-		//- else
-		//- 	form(action='/login' method='post')
-		//- 		h2 Please sign in
-		//- 		label(for='inputAdmin') username
-		//- 		input#Username(name='username', type='username', placeholder='Username', required)
-		//- 		br
-		//- 		label(for='inputPassword') password
-		//- 		input#password(name='password', type='password', placeholder='Password', required)
-		//- 		br
-		//- 		input(type='submit' value='Login' id='submit')
-		//- 		a(href='/new') Create Account
-		//- 	h2#error-message= message
+		p#fbkey(hidden) #{fbkey}
