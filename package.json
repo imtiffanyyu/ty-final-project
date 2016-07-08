@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/nycda-geeks/ty-final-project#readme",
   "dependencies": {
-    "bcrypt": "^0.8.7",
     "body-parser": "^1.15.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -25,8 +24,6 @@
     "express-session": "^1.13.0",
     "googlemaps": "^1.6.0",
     "morgan": "^1.7.0",
-    "passport": "^0.3.2",
-    "passport-facebook": "^2.1.1",
     "pg": "^6.0.1",
     "pug": "^2.0.0-beta3",
     "sequelize": "^3.23.4"

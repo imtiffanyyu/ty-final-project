@@ -1,22 +1,20 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var passport = require('passport');
-var Strategy = require('passport-facebook').Strategy;
 var Sequelize = require('sequelize');
 var pg = require('pg');
-const bcrypt = require('bcrypt');
 var GoogleMapsAPI = require('googlemaps');
 
 // Google Maps API
 var config = {
-	key: 'AIzaSyDpqwFm2cq9TtB4pijrvuun0dYq6NlUQZg',
+	key: process.env.GOOGLE_KEY,
   stagger_time:       1000, // for elevationPath
   encode_polylines:   false,
   secure:             true, // use https
   proxy:              'http://localhost:3000/' // optional, set a proxy for HTTP requests
 };
 
+var fbkey = process.env.FB_KEY;
 
 // connect to the database
 var sequelize = new Sequelize('fbadmin', process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
@@ -78,20 +76,19 @@ app.use(session({ // middleware is stuff that happens when someone does a reques
 
 app.use(express.static('public'));
 
-// Initialize Passport and restore authentication state, if any, from the
-// session.
-app.use(passport.initialize());
-app.use(passport.session());
-
 
 // Define routes.
 
 // initial log in
-app.get('/', function (req,res) {
-	res.render('index')
+app.get('/', (req,res) => {
+	console.log(fbkey)
+	res.render('index', {
+		fbkey: fbkey
+	})
 })
 
-app.post('/admin', function (req, res) {
+// creates tables based off of FB login
+app.post('/admin', (req, res) => {
 	fbinfo = req.body.fbinfo
 
 	Admin.findOrCreate( {
@@ -101,23 +98,27 @@ app.post('/admin', function (req, res) {
 			email: fbinfo.email,
 			picture: fbinfo.picture.data.url
 		}
-	}).then(function(theadmin) {
+	}).then( (theadmin) => {
 		for (var i = 0; i < fbinfo.admined_groups.data.length; i++) {
 			makeMeGroup(theadmin, fbinfo, i, makeMeMembers)
 		}
 		res.send('success')
 	})
 })
+
 function makeMeGroup(theadmin, fbinfo, i, callback) {
-	Group.findOrCreate({ where: {
-		fbgroupid: fbinfo.admined_groups.data[i].id,
-		name: fbinfo.admined_groups.data[i].name,
-		description: fbinfo.admined_groups.data[i].description,
-		adminId: theadmin[0].id
-	}}).then(function(thegroup){
+	Group.findOrCreate({ 
+		where: {
+			fbgroupid: fbinfo.admined_groups.data[i].id,
+			name: fbinfo.admined_groups.data[i].name,
+			description: fbinfo.admined_groups.data[i].description,
+			adminId: theadmin[0].id
+		}
+	}).then( (thegroup) => {
 		callback(thegroup, fbinfo, i)
 	})
 }
+
 function makeMeMembers(thegroup, fbinfo, i) {
 	console.log('members data')
 	for (var j = 0; j < fbinfo.admined_groups.data[i].members.data.length; j++) {
@@ -148,12 +149,12 @@ function doMember(i,j, thegroup, fbinfo) {
 	
 }
 
-app.get('/profile', function (req, res) {
+// creates profile page for FB user
+app.get('/profile', (req, res) => {
 	Admin.findOne( {
 		where: {id: 1},
 		include: [Group]
-	}).then(function(admininfo) {
-		console.log("bloop")
+	}).then( (admininfo) => {
 		console.log(req.session.admin)
 		var data = admininfo;
 		console.log(data);
@@ -163,27 +164,37 @@ app.get('/profile', function (req, res) {
 	})
 })
 
-app.get('/group/:id', function (req, res) {
+// creates pages for each group
+app.get('/group/:id', (req, res) => {
 	console.log(req.params.id);
 	Group.findOne({
 		where: {id: req.params.id},
 		include: [ Member ]
-	}).then(function (groupinfo) {
-		var points = groupinfo.members.map(function(member){
+	}).then( (groupinfo) => {
+		var points = groupinfo.members.map( (member) => {
 			return member.location;
 		})
-		console.log('points stuff')
-		console.log(points)
-		console.log("bleep");
+
+		var icons = groupinfo.members.map( (member) => {
+			return member.name.charAt(0);
+		})
+		
 		var groupdata = groupinfo;
 		console.log(groupdata);
 
 		var pointsObject = [];
 		for (var i = 0; i < points.length; i++) {
 			if (points[i] !== null) {
-				pointsObject.push ({location: points[i]})
+				pointsObject.push ({
+					location: points[i], 
+					label: icons[i],
+					color: 'purple'
+				})
 			}
 		}
+
+		console.log('points stuff')
+		console.log(pointsObject);
 
 		var gmAPI = new GoogleMapsAPI(config);
 		var params = {
@@ -202,45 +213,53 @@ app.get('/group/:id', function (req, res) {
 	})
 })
 
-// update member locations
-app.put('/group/:id', function (req, res) {
+// updates member locations
+app.put('/group/:id', (req, res) => {
 	Member.findOne({
 		where: {
 			id: req.body.memberid
 		},
 		include: [Group]
-	}).then(function (member) {
+	}).then( (member) => {
 		var object = {};
 		var membergroup = member.group.id
 		console.log('Member group is ' + membergroup)
 		object[req.body.newid] = req.body.newValue;
 		console.log(object);
-		member.updateAttributes(object).then(function () {
+		member.updateAttributes(object).then( ( ) => {
 			Group.findOne({
 				where: {id: membergroup},
 				include: [ Member ]
-			}).then(function (groupinfo) {
-				var points = groupinfo.members.map(function(member){
+			}).then( (groupinfo) => {
+				var points = groupinfo.members.map( (member) => {
 					return member.location;
 				})
-				console.log('points stuff')
-				console.log(points)
-				console.log("bleep");
+				var icons = groupinfo.members.map( (member) => {
+					return member.name.charAt(0);
+				})
+				
 				var groupdata = groupinfo;
-				console.log(groupdata);
 
 				var pointsObject = [];
 				for (var i = 0; i < points.length; i++) {
 					if (points[i] !== null) {
-						pointsObject.push ({location: points[i]})
+						pointsObject.push ({
+							location: points[i], 
+							label: icons[i],
+							color: 'purple'
+						})
 					}
 				}
+				console.log('points stuff')
+				console.log(pointsObject);
+				
+				
 
 				var gmAPI = new GoogleMapsAPI(config);
 				var params = {
 					size: '500x400',
 					maptype: 'roadmap',
-					markers: pointsObject	
+					markers: pointsObject
 
 				};
 		var mapURL = gmAPI.staticMap(params); // return static map URL
@@ -251,10 +270,8 @@ app.put('/group/:id', function (req, res) {
 	})
 })
 
-// TO DO -- JQUERY ON THE MAP, ADD ICONS
-
-sequelize.sync( {force: true} ).then(function () {
-	var server = app.listen(3000, function () {
+sequelize.sync( {force: true} ).then( ( ) => {
+	var server = app.listen(3000, ( ) => {
 		console.log('Map My Members app listening on port: ' + server.address().port);
 	});
 });
